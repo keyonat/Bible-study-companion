@@ -37,34 +37,34 @@ p {
   padding: 24px;
   font-size: 14px;
 }
-/* Card styling */
+/* card style */
 .card {
   background: white;
-  padding: 2rem;
-  margin: 2rem auto;
-  max-width: 400px;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 32px;
   text-align: center;
+  margin-top: 40px;
 }
 
 .card h2 {
   margin-top: 0;
-  color: #4a2db6; /* nice purple */
+  color: #5b31d0;
 }
 
-/* Button styling */
-button.primary {
-  background: #4a2db6;
+/* button style */
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #5b31d0;
   color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s ease;
 }
 
-button.primary:hover {
-  background: #37208d;
+.btn:hover {
+  background: #4725a6;
 }
