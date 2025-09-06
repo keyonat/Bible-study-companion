@@ -37,3 +37,34 @@ p {
   padding: 24px;
   font-size: 14px;
 }
+/* Card styling */
+.card {
+  background: white;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #4a2db6; /* nice purple */
+}
+
+/* Button styling */
+button.primary {
+  background: #4a2db6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button.primary:hover {
+  background: #37208d;
+}
