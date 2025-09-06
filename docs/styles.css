@@ -68,3 +68,28 @@ p {
 .btn:hover {
   background: #4725a6;
 }
+
+.features-section {
+  margin: 60px auto;
+  max-width: 700px;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.features-section h2 {
+  color: #5b31d0;
+  margin-bottom: 15px;
+}
+
+.features-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.features-section li {
+  margin: 10px 0;
+  font-size: 1.1em;
+}
+
