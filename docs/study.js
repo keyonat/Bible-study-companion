@@ -1,50 +1,44 @@
-// study.js — simple on-page "mock AI" so you can test the flow safely
-
-function mockSummarize(text) {
-  // Very simple "summary": first 1–2 sentences or first ~200 chars
-  const clean = text.trim().replace(/\s+/g, ' ');
-  const sentences = clean.split(/(?<=[.!?])\s+/);
-  if (sentences.length > 1) return sentences.slice(0, 2).join(' ');
-  return clean.slice(0, 200) + (clean.length > 200 ? '…' : '');
-}
-
-function mockThemes(text) {
-  const t = text.toLowerCase();
-  const themes = new Set();
-
-  // super simple keyword-based tags
-  if (/(love|kindness|mercy)/.test(t)) themes.add('Love & Mercy');
-  if (/(faith|believe|trust)/.test(t)) themes.add('Faith & Trust');
-  if (/(fear|enemy|trouble|valley)/.test(t)) themes.add('Comfort in Trials');
-  if (/(hope|promise|covenant)/.test(t)) themes.add('Hope & Promise');
-  if (/(wisdom|understanding|instruction)/.test(t)) themes.add('Wisdom & Guidance');
-  if (/(righteous|justice|holy|sin)/.test(t)) themes.add('Holiness & Righteousness');
-  if (/(shepherd|king|lord|god|jesus|spirit)/.test(t)) themes.add('God’s Character');
-
-  // fallback
-  if (themes.size === 0) themes.add('Reflection & Application');
-
-  return Array.from(themes).slice(0, 4);
-}
-
-function mockReflectionQuestion(text) {
-  // Tiny heuristic prompt
-  if (/shepherd/i.test(text)) return 'Where have you seen God guiding you like a shepherd this week?';
-  if (/love/i.test(text)) return 'How can you show this kind of love to someone today?';
-  if (/fear/i.test(text)) return 'What is one fear you can hand over to God right now?';
-  if (/wisdom|understanding/i.test(text)) return 'What decision are you facing that needs wisdom?';
-  return 'What is one small action you can take today to live out this passage?';
-}
+// docs/study.js
+// Wires the Analyze button to your Netlify Function and fills the UI.
 
 document.addEventListener('DOMContentLoaded', () => {
-  const textarea = document.getElementById('passage');
-  const btn = document.getElementById('analyzeBtn');
-  const results = document.getElementById('results');
-  const summaryEl = document.getElementById('summary');
-  const themesEl = document.getElementById('themes');
+  // Grab elements
+  const textarea   = document.getElementById('passage');
+  const btn        = document.getElementById('analyzeBtn');
+  const resultsBox = document.getElementById('results');
+  const summaryEl  = document.getElementById('summary');
+  const themesUl   = document.getElementById('themesList'); // must be a <ul>
   const questionEl = document.getElementById('question');
 
-  btn.addEventListener('click', () => {
+  // Simple helpers
+  function setLoading(isLoading) {
+    if (!btn) return;
+    btn.disabled = isLoading;
+    if (isLoading) {
+      btn.dataset.label = btn.textContent;
+      btn.textContent = 'Analyzing…';
+    } else {
+      btn.textContent = btn.dataset.label || 'Analyze';
+    }
+  }
+
+  function renderThemes(themes) {
+    themesUl.innerHTML = '';
+    if (!Array.isArray(themes) || themes.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No themes returned.';
+      themesUl.appendChild(li);
+      return;
+    }
+    themes.forEach(t => {
+      const li = document.createElement('li');
+      li.textContent = t;
+      themesUl.appendChild(li);
+    });
+  }
+
+  // Click handler
+  btn.addEventListener('click', async () => {
     const text = (textarea.value || '').trim();
     if (!text) {
       alert('Please paste a verse or short passage.');
@@ -52,23 +46,43 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // "Process" the text
-    const summary = mockSummarize(text);
-    const themes = mockThemes(text);
-    const question = mockReflectionQuestion(text);
+    // Reset UI + show loading
+    setLoading(true);
+    summaryEl.textContent = 'Thinking…';
+    renderThemes([]);
+    questionEl.textContent = '';
+    resultsBox.style.display = 'block';
 
-    // Update UI
-    summaryEl.textContent = summary;
-    themesEl.innerHTML = '';
-    themes.forEach(th => {
-      const li = document.createElement('li');
-      li.textContent = '• ' + th;
-      themesEl.appendChild(li);
-    });
-    questionEl.textContent = question;
+    try {
+      // Call your Netlify Function (works on your *.netlify.app domain)
+      const res = await fetch('/.netlify/functions/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
 
-    results.style.display = 'block';
-    // Scroll into view nicely
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        summaryEl.textContent = 'There was a problem contacting the AI service.';
+        console.error('Function error:', res.status, detail);
+        return;
+      }
+
+      const data = await res.json();
+
+      // Fill UI
+      summaryEl.textContent = data.summary || 'No summary returned.';
+      renderThemes(data.themes);
+      questionEl.textContent = data.question || 'No reflection question returned.';
+
+      // Scroll results into view
+      resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (err) {
+      console.error(err);
+      summaryEl.textContent = 'Unexpected error. Please try again.';
+    } finally {
+      setLoading(false);
+    }
   });
 });
