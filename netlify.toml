@@ -1,0 +1,6 @@
+[build]
+  publish = "docs"   # your site files are in /docs
+  command = ""
+
+[functions]
+  directory = "netlify/functions"
