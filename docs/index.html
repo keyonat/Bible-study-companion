@@ -16,17 +16,26 @@
     </nav>
   </div>
 
-  
-  <div id="contact" class="contact-section">
-    <h2>Contact</h2>
-    <p>Have feedback or ideas? Reach out below:</p>
-    <form class="contact-form">
-      <input type="text" placeholder="Your name" required>
-      <input type="email" placeholder="Your email" required>
-      <textarea placeholder="Your message" rows="4" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
+  <form class="contact-form">
+  <div class="field">
+    <label for="name">Your name</label>
+    <input id="name" type="text" placeholder="Your name" required>
   </div>
+
+  <div class="field">
+    <label for="email">Your email</label>
+    <input id="email" type="email" placeholder="you@example.com" required>
+  </div>
+
+  <div class="field">
+    <label for="message">Your message</label>
+    <textarea id="message" rows="5" placeholder="How can I help?" required></textarea>
+  </div>
+
+  <button type="submit" class="btn">Send Message</button>
+</form>
+
+
 
 
   
