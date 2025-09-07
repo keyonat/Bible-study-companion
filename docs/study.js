@@ -1,4 +1,5 @@
 // docs/study.js
+// Handles Analyze button, switches between local mock and Netlify function
 
 document.addEventListener('DOMContentLoaded', () => {
   const textarea   = document.getElementById('passage');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const themesEl   = document.getElementById('themes');
   const questionEl = document.getElementById('question');
 
+  // Helper: render bullet themes
   function renderThemes(items = []) {
     themesEl.innerHTML = '';
     items.forEach(t => {
@@ -18,11 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Helper: button loading state
   function setLoading(isLoading) {
     analyzeBtn.disabled = isLoading;
     analyzeBtn.textContent = isLoading ? 'Analyzing…' : 'Analyze';
   }
 
+  // Mock AI (for local testing without Netlify)
+  function mockAnalyzeText(text) {
+    return {
+      summary: `Mock summary: ${text.slice(0, 50)}...`,
+      themes: ["Faith", "Obedience", "Reflection"],
+      question: "What is one way you can apply this today?"
+    };
+  }
+
+  // Button handler
   analyzeBtn.addEventListener('click', async () => {
     const text = (textarea.value || '').trim();
     if (!text) {
@@ -30,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Reset UI
     setLoading(true);
     summaryEl.textContent = 'Thinking…';
     renderThemes([]);
@@ -37,29 +51,39 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsBox.style.display = 'block';
 
     try {
-      // Call your Netlify Function (same origin on Netlify)
-      const res = await fetch('/.netlify/functions/ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
+      // Decide: local vs Netlify
+      const isLocal = location.protocol === 'file:' || location.hostname === 'localhost';
 
-      if (!res.ok) {
-        const detail = await res.text().catch(() => '');
-        summaryEl.textContent =
-          `There was a problem contacting the AI service (status ${res.status}).`;
-        console.error('Function error:', res.status, detail);
-        return;
+      if (isLocal) {
+        // ✅ LOCAL TESTING: always mock
+        const data = mockAnalyzeText(text);
+        summaryEl.textContent = data.summary || '';
+        renderThemes(data.themes);
+        questionEl.textContent = data.question || '';
+      } else {
+        // ✅ NETLIFY DEPLOY: call your function
+        const res = await fetch('/.netlify/functions/ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+
+        if (!res.ok) {
+          const detail = await res.text().catch(() => '');
+          summaryEl.textContent =
+            `There was a problem contacting the AI service (status ${res.status}).`;
+          console.error('Function error:', res.status, detail);
+          return;
+        }
+
+        const data = await res.json(); // { summary, themes, question }
+        summaryEl.textContent = data.summary || '';
+        renderThemes(Array.isArray(data.themes) ? data.themes : []);
+        questionEl.textContent = data.question || '';
       }
-
-      const data = await res.json(); // { summary, themes, question }
-
-      summaryEl.textContent = data.summary || '—';
-      renderThemes(Array.isArray(data.themes) ? data.themes : []);
-      questionEl.textContent = data.question || '—';
     } catch (err) {
       console.error(err);
-      summaryEl.textContent = 'Network error contacting the AI service.';
+      summaryEl.textContent = 'Unexpected error. Please try again.';
     } finally {
       setLoading(false);
     }
