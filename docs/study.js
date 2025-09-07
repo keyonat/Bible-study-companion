@@ -1,89 +1,64 @@
-// docs/study.js
-// Handles Analyze button, switches between local mock and Netlify function
+document.addEventListener("DOMContentLoaded", () => {
+  const analyzeBtn = document.getElementById("analyzeBtn");
+  const passageEl = document.getElementById("passage");
+  const summaryEl = document.getElementById("summary");
+  const themesList = document.getElementById("themesList");
+  const questionEl = document.getElementById("question");
+  const resultsBox = document.getElementById("results");
 
-document.addEventListener('DOMContentLoaded', () => {
-  const textarea   = document.getElementById('passage');
-  const analyzeBtn = document.getElementById('analyzeBtn');
-
-  const resultsBox = document.getElementById('results');
-  const summaryEl  = document.getElementById('summary');
-  const themesEl   = document.getElementById('themes');
-  const questionEl = document.getElementById('question');
-
-  // Helper: render bullet themes
-  function renderThemes(items = []) {
-    themesEl.innerHTML = '';
-    items.forEach(t => {
-      const li = document.createElement('li');
-      li.textContent = t;
-      themesEl.appendChild(li);
-    });
-  }
-
-  // Helper: button loading state
   function setLoading(isLoading) {
-    analyzeBtn.disabled = isLoading;
-    analyzeBtn.textContent = isLoading ? 'Analyzing…' : 'Analyze';
+    if (isLoading) {
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = "Analyzing...";
+    } else {
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = "Analyze";
+    }
   }
 
-  // Mock AI (for local testing without Netlify)
-  function mockAnalyzeText(text) {
-    return {
-      summary: `Mock summary: ${text.slice(0, 50)}...`,
-      themes: ["Faith", "Obedience", "Reflection"],
-      question: "What is one way you can apply this today?"
-    };
+  function renderThemes(themes) {
+    themesList.innerHTML = "";
+    if (Array.isArray(themes)) {
+      themes.forEach((t) => {
+        const li = document.createElement("li");
+        li.textContent = t;
+        themesList.appendChild(li);
+      });
+    }
   }
 
-  // Button handler
-  analyzeBtn.addEventListener('click', async () => {
-    const text = (textarea.value || '').trim();
+  analyzeBtn.addEventListener("click", async () => {
+    const text = passageEl.value.trim();
     if (!text) {
-      alert('Please paste a verse or short passage.');
+      alert("Please enter a verse or passage.");
       return;
     }
 
-    // Reset UI
+    // Reset UI + show loading
     setLoading(true);
-    summaryEl.textContent = 'Thinking…';
+    summaryEl.textContent = "Thinking...";
     renderThemes([]);
-    questionEl.textContent = '';
-    resultsBox.style.display = 'block';
+    questionEl.textContent = "";
+    resultsBox.style.display = "block";
 
     try {
-      // Decide: local vs Netlify
-      const isLocal = location.protocol === 'file:' || location.hostname === 'localhost';
+      // Call mock AI response for now
+      const mockData = {
+        summary: `You entered: "${text}"`,
+        themes: ["Faith", "Trust", "Encouragement"],
+        question: "How can you apply this verse today?",
+      };
 
-      if (isLocal) {
-        // ✅ LOCAL TESTING: always mock
-        const data = mockAnalyzeText(text);
-        summaryEl.textContent = data.summary || '';
-        renderThemes(data.themes);
-        questionEl.textContent = data.question || '';
-      } else {
-        // ✅ NETLIFY DEPLOY: call your function
-        const res = await fetch('/.netlify/functions/ai', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text })
-        });
+      // Simulate a small delay
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
-        if (!res.ok) {
-          const detail = await res.text().catch(() => '');
-          summaryEl.textContent =
-            `There was a problem contacting the AI service (status ${res.status}).`;
-          console.error('Function error:', res.status, detail);
-          return;
-        }
-
-        const data = await res.json(); // { summary, themes, question }
-        summaryEl.textContent = data.summary || '';
-        renderThemes(Array.isArray(data.themes) ? data.themes : []);
-        questionEl.textContent = data.question || '';
-      }
+      // Display results
+      summaryEl.textContent = mockData.summary;
+      renderThemes(mockData.themes);
+      questionEl.textContent = mockData.question;
     } catch (err) {
-      console.error(err);
-      summaryEl.textContent = 'Unexpected error. Please try again.';
+      console.error("Unexpected error:", err);
+      summaryEl.textContent = "Something went wrong.";
     } finally {
       setLoading(false);
     }
