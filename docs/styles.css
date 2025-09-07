@@ -202,3 +202,8 @@ p {
 html {
   scroll-behavior: smooth;
 }
+.nav a.active {
+  color: #4725a6;
+  font-weight: bold;
+  text-decoration: underline;
+}
