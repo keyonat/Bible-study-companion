@@ -1,52 +1,33 @@
-// netlify/functions/ai.js
-export default async (req) => {
+// netlify/functions/ai.js  (classic Node handler style)
+exports.handler = async (event, context) => {
   try {
-    const { text } = await req.json();
+    const body = JSON.parse(event.body || "{}");
+    const text = (body.text || "").trim();
+
     if (!text) {
-      return new Response(JSON.stringify({ error: "Missing text" }), { status: 400 });
+      return {
+        statusCode: 400,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: "Missing text" }),
+      };
     }
 
-    // Use your OpenAI API key stored in Netlify
-    const apiKey = process.env.OPENAI_API_KEY;
+    // Mock response for wiring test (no OpenAI call yet)
+    const summary = text.slice(0, 180);
+    const themes = ["Reflection & Application"];
+    const question =
+      "What is one small action you can take today to live out this passage?";
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a Bible study companion. Always respond in JSON with three fields: summary, themes, and question." },
-          { role: "user", content: `Analyze this Bible passage: ${text}` }
-        ],
-        temperature: 0.7
-      })
-    });
-
-    const data = await response.json();
-
-    let summary = "No response";
-    let themes = [];
-    let question = "No question generated";
-
-    try {
-      const parsed = JSON.parse(data.choices?.[0]?.message?.content || "{}");
-      summary = parsed.summary || summary;
-      themes = parsed.themes || themes;
-      question = parsed.question || question;
-    } catch (err) {
-      summary = data.choices?.[0]?.message?.content || summary;
-    }
-
-    return new Response(JSON.stringify({ summary, themes, question }), {
+    return {
+      statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      status: 200
-    });
-
-  } catch (e) {
-    return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
+      body: JSON.stringify({ summary, themes, question }),
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: "Server error" }),
+    };
   }
 };
-
