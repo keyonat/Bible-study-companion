@@ -43,42 +43,12 @@
     <p>&copy; 2025 Bible Study Companion Project</p>
   </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const textarea = document.getElementById('passage');
-  const btn = document.getElementById('analyzeBtn');
-  const results = document.getElementById('results');
-  const summaryEl = document.getElementById('summary');
-  const themesEl = document.getElementById('themes');
-  const questionEl = document.getElementById('question');
+    <!-- Load only the external script (no inline JS here) -->
+    <script src="study.js?v=3" defer></script>
+    
+</body>
+</html>
 
-  btn.addEventListener('click', async () => {
-    const text = (textarea.value || '').trim();
-    if (!text) { alert('Please paste a verse or short passage.'); return; }
-
-    try {
-      const res = await fetch("/.netlify/functions/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-
-      const data = await res.json();
-      summaryEl.textContent = data.summary || '';
-      themesEl.innerHTML = '';
-      (data.themes || []).forEach(t => {
-        const li = document.createElement('li');
-        li.textContent = '• ' + t;
-        themesEl.appendChild(li);
-      });
-      questionEl.textContent = data.question || '';
-      results.style.display = 'block';
-    } catch (err) {
-      alert('Could not reach the analysis service yet. If you are still on GitHub Pages, this will work after we deploy to Netlify.');
-    }
-  });
-});
-</script>
 
 </body>
 </html>
