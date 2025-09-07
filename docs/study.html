@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!text) { alert('Please paste a verse or short passage.'); return; }
 
     try {
-      const res = await fetch('/.netlify/functions/ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
+      const res = await fetch("/.netlify/functions/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
       });
 
       const data = await res.json();
