@@ -199,3 +199,6 @@ p {
   margin-bottom: 15px;
   color: #6a0dad;
 }
+html {
+  scroll-behavior: smooth;
+}
