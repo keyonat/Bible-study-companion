@@ -54,12 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsBox.style.display = 'block';
 
     try {
-      // Call your Netlify Function (works on your *.netlify.app domain)
-      const res = await fetch('/.netlify/functions/ai', {
+    // Call your Netlify Function (works on your *.netlify.app domain)
+    const endpoint = `${window.location.origin}/.netlify/functions/ai`;
+    const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text })
-      });
+    });
 
       if (!res.ok) {
         const detail = await res.text().catch(() => '');
