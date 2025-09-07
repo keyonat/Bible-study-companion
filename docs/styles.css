@@ -187,3 +187,15 @@ p {
 .contact-form .btn:hover {
   background: #53118e;
 }
+
+.footer {
+  padding: 40px 20px;
+  background: #f8f5ff;
+  text-align: center;
+  border-top: 2px solid #eee;
+}
+
+.footer h2 {
+  margin-bottom: 15px;
+  color: #6a0dad;
+}
