@@ -33,10 +33,10 @@ This is a **learning-in-public project**. I’m sharing progress step by step as
 ## Design Mockup
 Here are the first mockups for the Bible Study Companion app:
 **Landing Page**
-![Landing Page](designs/landing-page.png)
+![Landing Page](designs/Bible-Study-Companion-Mockup.png)
 
 **Study Page**
-![Study Page](designs/study-page.png)
+![Study Page](designs/Landing-Page.png)
 
 ---
 ## 📬 Feedback
