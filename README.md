@@ -21,8 +21,8 @@ This project is part of my journey into **Digital Product Design** + **Applied A
 
 ## 📂 Project Status
 - [x] Repo created  
-- [ ] Initial design mockups  
-- [ ] First prototype build  
+- [X] Initial design mockups  
+- [X] First prototype build  
 
 ---
 
@@ -30,6 +30,14 @@ This project is part of my journey into **Digital Product Design** + **Applied A
 This is a **learning-in-public project**. I’m sharing progress step by step as I explore design + applied AI.  
 
 ---
+## Design Mockup
+Here are the first mockups for the Bible Study Companion app:
+**Landing Page**
+![Landing Page](designs/landing-page.png)
 
+**Study Page**
+![Study Page](designs/study-page.png)
+
+---
 ## 📬 Feedback
 If you have ideas or suggestions, feel free to open an issue or share feedback.  
