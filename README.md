@@ -22,7 +22,8 @@ This project is part of my journey into **Digital Product Design** + **Applied A
 ## 📂 Project Status
 - [x] Repo created  
 - [X] Initial design mockups  
-- [X] First prototype build  
+- [X] First prototype build
+- [X] - [Bible Study Companion – Case Study](docs/case-studies/bible-study-companion.md)
 
 ---
 
